@@ -1,0 +1,52 @@
+{
+    "name": "Budget Tracker",
+    "short_name": "Budget Tracker",
+    "description": "An app for tracking income and expenses.",
+    "icons": [
+      {
+        "src": "./public/icons/icon-",
+        "type": "image/png",
+        "sizes": "72x72"
+      },
+      {
+        "src": "./public/icons/icon-",
+        "type": "image/png",
+        "sizes": "96x96"
+      },
+      {
+        "src": "./public/icons/icon-",
+        "type": "image/png",
+        "sizes": "128x128"
+      },
+      {
+        "src": "./public/icons/icon-",
+        "type": "image/png",
+        "sizes": "144x144"
+      },
+      {
+        "src": "./public/icons/icon-",
+        "type": "image/png",
+        "sizes": "152x152"
+      },
+      {
+        "src": "./public/icons/icon-",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "./public/icons/icon-",
+        "type": "image/png",
+        "sizes": "384x384"
+      },
+      {
+        "src": "./public/icons/icon-",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "theme_color": "#dddddd",
+    "background_color": "#dddddd",
+    "start_url": "../index.html",
+    "display": "fullscreen"
+
+}
