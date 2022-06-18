@@ -15,33 +15,30 @@ const FILES_TO_CACHE = [
   './icons/icon-152x152.png',
   './icons/icon-192x192.png',
   './icons/icon-384x384.png',
-  './icons/icon-512x512.png'
+  './icons/icon-512x512.png',
+  './api/transaction'
 ];
 
 // load cached resources
 self.addEventListener('fetch', function (e) {
-  console.log('fetch request : ' + e.request.url)
+  //console.log('fetch request : ' + e.request.url)
   e.respondWith(
     caches.match(e.request).then(function (request) {
-      if (request) {
-        console.log('responding with cache : ' + e.request.url)
-        return request
-      } else {
-        console.log('file not cached, fetching : ' + e.request.url)
-        return fetch(e.request)
-      }
+      return request || fetch(e.request)
     })
   )
+  console.log('files loaded from cache: ' + CACHE_NAME);
 })
 
 // cache resources
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
-      console.log('installing cache : ' + CACHE_NAME)
+      console.log('installing cache: ' + CACHE_NAME)
       return cache.addAll(FILES_TO_CACHE)
     })
   )
+  console.log('cache: ' + CACHE_NAME + ' installed successfully')
 })
 
 // activate cache
@@ -63,6 +60,6 @@ self.addEventListener('activate', function (e) {
       );
     })
   );
-  console.log('cache activated');
+  console.log('cache: ' + CACHE_NAME + ' activated');
 });
 

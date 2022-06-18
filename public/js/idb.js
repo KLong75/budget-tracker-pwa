@@ -55,7 +55,7 @@ function uploadTransaction() {
 
           const transactionObjectStore = transaction.objectStore('new_transaction');
 
-          transaction.ObjectStore.clear();
+          transactionObjectStore.clear();
 
           alert('All saved transanctions have been submitted')
         })
