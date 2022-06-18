@@ -9,7 +9,6 @@ request .onupgradeneeded = function(event) {
 
 request.onsuccess = function (event) {
   db = event.target.result;
-
   if (navigator.online) {
     uploadTransaction();
   }
@@ -21,21 +20,15 @@ request.onerror = function(event) {
 };
 
 function saveRecord(record) {
-  const transaction = db.transaction(['new_transaction'],
-  'readwrite');
-  
+  const transaction = db.transaction(['new_transaction'], 'readwrite');
   const transactionObjectStore = transaction.objectStore('new_transaction');
-
   transactionObjectStore.add(record);
 }
 
 function uploadTransaction() {
   const transaction = db.transaction(['new_transaction'], 'readwrite');
-
   const transactionObjectStore = transaction.objectStore('new_transaction');
-
   const getAll = transactionObjectStore.getAll();
-
   getAll.onsuccess = function() {
     if(getAll.result.length > 0) {
       fetch('api/transaction', {
@@ -52,11 +45,8 @@ function uploadTransaction() {
             throw new Error(serverResponse);
           }
           const transaction = db.transaction(['new_transaction'], 'readwrite');
-
           const transactionObjectStore = transaction.objectStore('new_transaction');
-
           transactionObjectStore.clear();
-
           alert('All saved transanctions have been submitted')
         })
         .catch(err => {
