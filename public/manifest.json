@@ -46,8 +46,7 @@
     ],
     "theme_color": "#dddddd",
     "background_color": "#dddddd",
-    "start_url": "./index.html",
+    "start_url": "./",
     "display": "fullscreen",
-    "id": "./index.html"
-
+    "id": "./"
 }

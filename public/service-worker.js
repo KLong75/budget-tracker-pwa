@@ -1,6 +1,8 @@
-const APP_PREFIX = 'BudgetTracker-';
-const VERSION = 'version_01';
-const CACHE_NAME = APP_PREFIX + VERSION
+const APP_PREFIX = 'Budget_Tracker - ';
+const VERSION = 'v_01 - ';
+const CACHE_NAME = APP_PREFIX + VERSION + 'File_Cache'
+const DATA_CACHE_NAME = APP_PREFIX + 'Transaction_Cache'
+
 const FILES_TO_CACHE = [
   './',
   './index.html',
@@ -15,51 +17,69 @@ const FILES_TO_CACHE = [
   './icons/icon-152x152.png',
   './icons/icon-192x192.png',
   './icons/icon-384x384.png',
-  './icons/icon-512x512.png',
-  './api/transaction'
+  './icons/icon-512x512.png'
 ];
 
-// load cached resources
-self.addEventListener('fetch', function (e) {
-  //console.log('fetch request : ' + e.request.url)
-  e.respondWith(
-    caches.match(e.request).then(function (request) {
-      return request || fetch(e.request)
-    })
-  )
-  console.log('files loaded from cache: ' + CACHE_NAME);
-})
-
-// cache resources
+// install service worker, add files to cache
 self.addEventListener('install', function (e) {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(function (cache) {
-      console.log('installing cache: ' + CACHE_NAME)
-      return cache.addAll(FILES_TO_CACHE)
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('service worker installed: app files pre-cached successfully');
+      return cache.addAll(FILES_TO_CACHE);
     })
-  )
-  console.log('cache: ' + CACHE_NAME + ' installed successfully')
-})
+  );
+  self.skipWaiting();
+});
 
-// activate cache
+// activate service worker, clear old cache data
 self.addEventListener('activate', function (e) {
   e.waitUntil(
-    caches.keys().then(function (keyList) {
-      let cacheKeeplist = keyList.filter(function(key) {
-        return key.indexOf(APP_PREFIX);
-      })
-      cacheKeeplist.push(CACHE_NAME);
-
+    caches.keys().then((keyList) => {
       return Promise.all(
-        keyList.map(function (key, i) {
-          if (cacheKeeplist.indexOf(key) === -1) {
-            console.log('deleting cache : ' + keyList[i] );
-            return caches.delete(keyList[i]);
+        keyList.map((key) => {
+          if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
+            console.log('old cache data cleared', key);
+            return caches.delete(key);
           }
         })
       );
     })
   );
-  console.log('cache: ' + CACHE_NAME + ' activated');
+  self.clients.claim();
 });
 
+// Intercept fetch requests with '/api/', clone response, and save to cache
+self.addEventListener('fetch', function (e) {
+  if (e.request.url.includes('/api/')) {
+    e.respondWith(
+      caches
+        .open(DATA_CACHE_NAME)
+        .then(async (cache) => {
+          try {
+            const response = await fetch(e.request);
+            // if response good, clone, and store in cache
+            if (response.status === 200) {
+              cache.put(e.request.url, response.clone());
+            }
+            return response;
+          } catch (err) {
+            return await cache.match(e.request);
+          }
+        })
+        .catch((err) => console.log(err))
+    );
+    return;
+  }
+
+  e.respondWith(
+    fetch(e.request).catch(async function () {
+      const response = await caches.match(e.request);
+      if (response) {
+        return response;
+      } else if (e.request.headers.get('accept').includes('text/html')) {
+        // return cached html file on all requests for html pages
+        return caches.match('/');
+      }
+    })
+  );
+});
